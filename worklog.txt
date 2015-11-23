@@ -1,0 +1,115 @@
+#Create a cava database using psql
+
+cava=# CREATE DATABASE cava;
+cava=# \l
+
+#connect to cava database
+cava=# \connect cava
+
+#This is the psql to create the appdata table, assuming no consumer has the app installed on separate phones.
+
+cava=# CREATE TABLE appdata (
+    download_app        date,
+    first_purchase      date,
+    purchases           smallint
+);
+cava=# \dt
+
+#Load csv data to appdata table
+
+cava=# \COPY appdata FROM '/root/datachallenge/data.csv' DELIMITER ',' CSV HEADER;
+
+#sql statements
+
+#First let's make sure all of the data was imported.
+cava=# select count(*) from appdata;  
+  count
+---------
+ 3000000
+(1 row)
+
+#Now let's see if there are any holes in the data that we should be aware of:
+cava=# select count(*) from appdata where download_app IS NULL;
+ count
+-------
+     0
+(1 row)
+
+cava=# select count(*) from appdata where first_purchase IS NULL;
+ count
+-------
+     0
+(1 row)
+
+cava=# select count(*) from appdata where purchases IS NULL;
+ count
+-------
+     0
+(1 row)
+
+#Now that we are comfortable with the data intake, let's get some ranges for each column:
+
+cava=# select min(download_app) from appdata;
+    min
+------------
+ 2014-11-01
+(1 row)
+
+cava=# select max(download_app) from appdata;
+    max
+------------
+ 2015-01-29
+(1 row)
+
+cava=# select min(first_purchase) from appdata;
+    min
+------------
+ 2014-11-01
+(1 row)
+
+cava=# select max(first_purchase) from appdata;
+    max
+------------
+ 2015-04-22
+(1 row)
+
+cava=# select min(purchases) from appdata;
+ min
+-----
+   0
+(1 row)
+
+cava=# select max(purchases) from appdata;
+ max
+-----
+  50
+(1 row)
+
+#We can see that this dataset spans a few months.
+
+#the consumers on average have made 3 purchases from cava
+
+cava=# select avg(purchases) from appdata;
+        avg
+--------------------
+ 2.9855903333333333
+(1 row)
+
+#consumers on average make their first purchase almost a week after download the app
+
+select avg(first_purchase - download_app) from appdata;
+        avg
+--------------------
+ 6.5139246
+
+#Let's add a column for each consumer's number of days from download the app to making the first purchase
+cava=# ALTER TABLE appdata ADD COLUMN datediff numeric;
+
+#add a PK
+ALTER TABLE appdata ADD COLUMN id SERIAL PRIMARY KEY;
+
+#Populate this column:
+UPDATE appdata
+SET datediff = (first_purchase - download_app);
+
+#Moving this over to ipynb for futher analysis.
