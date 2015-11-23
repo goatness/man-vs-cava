@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Data Challenge
 This is Cava Grills data challenge. Used to asses how potential interns technical skills are.
 If you so choose, please complete the excersies and email us if you are interested in the position. 
@@ -10,3 +11,7 @@ If you are applying for the BI position, please use SQL,MYSQL or any RDMS to que
 
 ## Data Scientist
 If you are applying for the DS position, please complete the entire excercise.
+=======
+# man-vs-cava
+cava data challenge
+>>>>>>> 08fe4be7724e2c9df18ea3f6017a3a02e365f583
